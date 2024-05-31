@@ -13,6 +13,10 @@ export const useStudentsStore = defineStore({
       const responseJson = await response.json()
       this.$state.loading = false
       this.$state.students = responseJson.students
+    },
+    addStudent(form) {
+      const newData = { ...form, remainingTasks: Number(form.totalTasks), solvedTasks: 0 }
+      this.$state.students = [...this.$state.students, newData]
     }
   },
   getters: {

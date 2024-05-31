@@ -1,6 +1,9 @@
 <template>
   <fwb-card class="w-full !max-w-none min-h-full hover:bg-white p-6">
-    <h5 class="text-lg font-semibold">Student List</h5>
+    <div class="flex justify-between">
+      <h5 class="text-lg font-semibold">Student List</h5>
+      <fwb-button @click="openModalStudent">Add Student</fwb-button>
+    </div>
     <fwb-table class="mt-10">
       <fwb-table-head>
         <fwb-table-head-cell>Student Name</fwb-table-head-cell>
@@ -18,6 +21,33 @@
       </fwb-table-body>
     </fwb-table>
   </fwb-card>
+  <fwb-modal v-if="isShowModal" @close="closeModal">
+    <template #header>
+      <div class="flex items-center text-lg">Add Student</div>
+    </template>
+    <template #body>
+      <div class="flex flex-col gap-4">
+        <div>
+          <label for="name">Name</label>
+          <fwb-input v-model="form.name" />
+        </div>
+        <div>
+          <label for="grade">Grade</label>
+          <fwb-input v-model="form.grade" />
+        </div>
+        <div>
+          <label for="tasks">Total Tasks</label>
+          <fwb-input v-model="form.totalTasks" />
+        </div>
+      </div>
+    </template>
+    <template #footer>
+      <div class="flex justify-between">
+        <fwb-button @click="closeModal" color="alternative"> Cancel </fwb-button>
+        <fwb-button @click.prevent="submitForm" color="blue"> Submit </fwb-button>
+      </div>
+    </template>
+  </fwb-modal>
 </template>
 
 <script setup>
@@ -28,12 +58,36 @@ import {
   FwbTableCell,
   FwbTableHead,
   FwbTableHeadCell,
-  FwbTableRow
+  FwbTableRow,
+  FwbButton,
+  FwbModal,
+  FwbInput
 } from 'flowbite-vue'
 import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
 import { useStudentsStore } from '../store/students'
 
 const studentsStore = useStudentsStore()
-studentsStore.getStudents()
+const { addStudent, getStudents } = studentsStore
 const { students } = storeToRefs(studentsStore)
+
+getStudents()
+
+const form = ref({
+  name: '',
+  grade: '',
+  totalTasks: null
+})
+const isShowModal = ref(false)
+
+const openModalStudent = () => {
+  isShowModal.value = true
+}
+const closeModal = () => {
+  isShowModal.value = false
+}
+const submitForm = () => {
+  addStudent(form.value)
+  closeModal()
+}
 </script>
